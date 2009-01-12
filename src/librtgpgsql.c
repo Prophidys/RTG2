@@ -148,7 +148,7 @@ int __db_insert(char *table, int iid, unsigned long long insert_val, double inse
 	table_esc = escape_string(table_esc, table);
 				
 	asprintf(&query,
-		"INSERT INTO \"%s\" (id,dtime,counter,rate) VALUES (%d,NOW(),%llu,%.6f)",
+		"INSERT INTO %s (id,dtime,counter,rate) VALUES (%d,NOW(),%llu,%.6f)",
 		table_esc, iid, insert_val, insert_rate);
 
 	free(table_esc);
@@ -174,4 +174,118 @@ int __db_insert(char *table, int iid, unsigned long long insert_val, double inse
 
 		return FALSE;
 	}
+}
+
+
+int __db_commit() {
+    struct timespec ts1;
+    struct timespec ts2;
+    unsigned int ms_took;
+    int com_ret;
+    PGconn *pgsql = getpgsql();
+
+    clock_gettime(CLOCK_REALTIME,&ts1);
+    
+    com_ret = pgsql_db_commit(pgsql);
+
+    clock_gettime(CLOCK_REALTIME,&ts2);
+    
+    ms_took = (unsigned int)((ts2.tv_sec * 1000000000 + ts2.tv_nsec) - (ts1.tv_sec * 1000000000 + ts1.tv_nsec)) / 1000000;
+    debug(HIGH,"Commit took %d milliseconds at [%d][%d][%d][%d]\n",ms_took,ts1.tv_sec,ts1.tv_nsec,ts2.tv_sec,ts2.tv_nsec);
+
+    return com_ret;
+}
+
+
+#ifdef HAVE_STRTOLL
+long long __db_intSpeed(char *query) {
+    long long ret = 0;
+#else
+long __db_intSpeed(char *query) {
+    long ret = 0;
+#endif
+    PGconn *pgsql = getpgsql();
+    PGresult *result;
+
+    result = PQexec(pgsql, query);
+
+    if (PQresultStatus(result) == PGRES_TUPLES_OK) {
+      if (1 == PQntuples(result))
+	{
+#ifdef HAVE_STRTOLL
+	  ret = strtoll(PQgetvalue(result, 0, 0), NULL, 0);
+#else
+	  ret = strtol(PQgetvalue(result, 0, 0), NULL, 0);
+#endif
+	}
+      else
+	{
+	  debug(LOW, "Expected 1 row result but instead got %d rows.\n", PQntuples(result));
+	}
+
+      /* free the result */
+      (void)PQclear(result);
+    } else {
+      /* Note that by libpq convention, a non-empty PQerrorMessage will include a trailing newline. */
+      /* also errors start with 'ERROR:' so we don't need to */
+      debug(LOW, "Postgres %s", PQerrorMessage(pgsql));
+
+      /* free the result */
+      (void)PQclear(result);
+    }
+
+    return ret;
+}
+
+
+int __db_populate(char *query, data_obj_t *DO) {
+    PGconn *pgsql = getpgsql();
+    PGresult *result;
+    data_t *new = NULL;
+    data_t *last = NULL;
+    data_t **data = &(DO->data);
+    int i, max;
+
+    result = PQexec(pgsql, query);
+
+    if (PQresultStatus(result) == PGRES_TUPLES_OK &&
+	2 == PQnfields(result)) {
+      max = PQntuples(result);
+      for (i = 0; i < max; i++)
+	{
+	  if ((new = (data_t *) malloc(sizeof(data_t))) == NULL)
+            debug(LOW, "  Fatal malloc error in __db_populate.\n");
+#ifdef HAVE_STRTOLL
+	  new->counter = strtoll(PQgetvalue(result, i, 0), NULL, 0);
+#else
+	  new->counter = strtol(PQgetvalue(result, i, 0), NULL, 0);
+#endif
+	  new->timestamp = strtoul(PQgetvalue(result, i, 1), NULL, 0);
+	  new->next = NULL;
+	  (DO->datapoints)++;
+	  if (new->counter > DO->counter_max)
+            DO->counter_max = new->counter;
+	  if (*data != NULL) {
+            last->next = new;
+            last = new;
+	  } else {
+            DO->dataBegin = new->timestamp;
+            *data = new;
+            last = new;
+	  }
+	}
+
+      /* free the result */
+      (void)PQclear(result);
+      return TRUE;
+    } else {
+      /* Note that by libpq convention, a non-empty PQerrorMessage will include a trailing newline. */
+      /* also errors start with 'ERROR:' so we don't need to */
+
+      /* free the result */
+      (void)PQclear(result);
+
+      debug(LOW, "Postgres %s", PQerrorMessage(pgsql));
+      return FALSE;
+    }
 }

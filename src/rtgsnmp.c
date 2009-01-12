@@ -345,7 +345,9 @@ void *poller(void *thread_args)
 					PT_MUTEX_LOCK(&stats.mutex);
 					stats.db_inserts++;
 					PT_MUTEX_UNLOCK(&stats.mutex);
-				} 
+				} else {
+					fatal("Fatal database error.\n");
+				}
 			} /* insert_val > 0 or withzeros */	
 		} /* !dboff */
 

@@ -242,19 +242,28 @@ arguments.table[i], graph.range.begin, graph.range.end, arguments.iid[j]);
 			if (HTMLOUT) 
 				printf("Doing DO %d <br>\n", i);
 /*			snprintf(query, sizeof(query), "SELECT counter, dtime FROM %s WHERE dtime>=%ld AND dtime<=%ld AND id=%d ORDER BY dtime",  */
-                        snprintf(query, sizeof(query), "SELECT counter, UNIX_TIMESTAMP(dtime) FROM %s WHERE dtime>FROM_UNIXTIME(%ld) AND dtime <=FROM_UNIXTIME(%ld) AND id=%d ORDER BY dtime",
-				DOs[i]->table, PO->range.begin, PO->range.end, DOs[i]->id);
-			if (populate(query, (DOs[i])) < 0) {
-				//printf("problem populating(), recreating query <br>\n");
-				// XXX - REB - this doesn't make sense to me looking at it now 
-				snprintf(query, sizeof(query), "SELECT counter, dtime FROM %s WHERE id=%d AND rownum < 2 ORDER BY dtime DESC",
-					DOs[i]->table, DOs[i]->id);
-				/* Recreate the query to get the last point in the DB.  
-					Then recall populate. */
+			if (NULL != strcasestr(set->dbdriver, "pgsql")) {
+				/* Postgresql */
+                        	snprintf(query, sizeof(query), "SELECT counter, EXTRACT(EPOCH FROM dtime) FROM %s WHERE dtime > to_timestamp(%ld) AND dtime <= to_timestamp(%ld) AND id=%d ORDER BY dtime",
+					DOs[i]->table, PO->range.begin, PO->range.end, DOs[i]->id);
 				if (populate(query, (DOs[i])) < 0) {
 					plotdebug("No data to populate() for table: %s int: %d\n", DOs[i]->table, DOs[i]->id);
 				}
-			} 
+			} else {
+                        	snprintf(query, sizeof(query), "SELECT counter, UNIX_TIMESTAMP(dtime) FROM %s WHERE dtime>FROM_UNIXTIME(%ld) AND dtime <=FROM_UNIXTIME(%ld) AND id=%d ORDER BY dtime",
+					DOs[i]->table, PO->range.begin, PO->range.end, DOs[i]->id);
+				if (populate(query, (DOs[i])) < 0) {
+					//printf("problem populating(), recreating query <br>\n");
+					// XXX - REB - this doesn't make sense to me looking at it now 
+					snprintf(query, sizeof(query), "SELECT counter, dtime FROM %s WHERE id=%d AND rownum < 2 ORDER BY dtime DESC",
+						DOs[i]->table, DOs[i]->id);
+					/* Recreate the query to get the last point in the DB.  
+						Then recall populate. */
+					if (populate(query, (DOs[i])) < 0) {
+						plotdebug("No data to populate() for table: %s int: %d\n", DOs[i]->table, DOs[i]->id);
+					}
+				} 
+			}
 		}
 	}
 

@@ -267,9 +267,18 @@ sub create_table($$) {
     if( $rv == 0) {
         my $start_time = clock_gettime();
         my $table_name = $mib."_$rid";
-        $sql = "CREATE TABLE $mib"."_$rid 
+	if($DB_TYPE =~ /postgres/i) {
+	    $sql = "CREATE TABLE $mib"."_$rid
+                       (id int NOT NULL default '0',
+                       dtime timestamp NOT NULL,
+                       counter bigint NOT NULL default '0',
+                       rate real NOT NULL default '0.0');
+                    CREATE INDEX $mib"."_$rid". "_idx ON $mib"."_$rid (dtime)";
+	} else {
+	    $sql = "CREATE TABLE $mib"."_$rid 
             (id INT NOT NULL, dtime DATETIME NOT NULL, counter BIGINT NOT NULL, 
             rate BIGINT, KEY $mib"."_$rid". "_idx (dtime))";
+	}
 #        $sql = "CREATE TABLE $table_name (id INT NOT NULL, dtime INT NOT NULL, counter INT NOT NULL, rate INT)";
 #        $sql = "CREATE TABLE $table_name (id INT NOT NULL, dtime INT NOT NULL, counter NUMBER(21) NOT NULL, rate INT)";
         &sql_insert($sql);
@@ -362,6 +371,10 @@ sub update_tableid_mappings($$) {
             or die "Can't prepare $sql: $dbh->errstr\n";
         $sth->bind_param(":tablename",$table_name);
         $sth->bind_param(":iid",$iid);
+    } elsif($DB_TYPE =~ /postgres/i) {
+        $sql = "SELECT * FROM table2iid_mapping WHERE tablename='$table_name' AND id='$iid'";
+        $sth = $dbh->prepare($sql)
+            or die "Can't prepare $sql: $dbh->errstr\n";
     }
 
     my $rv = $sth->execute
@@ -420,6 +433,11 @@ sub find_router_id {
         $sth = $dbh->prepare($sql)
             or die "Can't prepare $sql: $dbh->errstr\n";
         $sth->bind_param(":router",$router);
+    } elsif($DB_TYPE =~ /postgres/i) {
+        $sql = "SELECT rid FROM router WHERE name='$router'";
+        debug("SQL: $sql");
+        $sth = $dbh->prepare($sql)
+            or die "Can't prepare $sql: $dbh->errstr\n";
     }
     my $rv = $sth->execute
       or die "can't execute the query: $sth->errstr\n";
@@ -431,7 +449,9 @@ sub find_router_id {
             $sql = "INSERT INTO router (rid,name) VALUES(0,'$router')";
         } elsif($DB_TYPE =~ /oracle/i) {
             $sql = "INSERT INTO router (rid,name) VALUES(router_seq.nextval,'$router')";
-        }
+        } elsif($DB_TYPE =~ /postgres/i) {
+            $sql = "INSERT INTO router (name) VALUES('$router')";
+	}
         print "adding.\n";
         &sql_insert($sql);
         $rid = &find_router_id($router);
@@ -473,6 +493,10 @@ sub table_exists($) {
         $sql = "SELECT TABLE_NAME FROM TABS WHERE TABLE_NAME=:tablename";
         $sth = $dbh->prepare($sql);
         $sth->bind_param(":tablename",uc($table_name));
+    } elsif($DB_TYPE =~ /postgres/i) {
+        $sql = "SELECT table_name FROM information_schema.tables WHERE table_name = '".lc($table_name)."'";
+        $sth = $dbh->prepare($sql);
+	debug("SQL: $sql");
     }
 
     $dbh->{PrintError} = 0;
@@ -502,7 +526,11 @@ sub table_exists($) {
 sub set_inactive($) {
 	my ($rid) = @_;
 
-	$sql = "UPDATE interface set status='inactive' where rid='$rid'";
+	if($DB_TYPE =~ /postgres/i) {
+	    $sql = "UPDATE interface set status='false' where rid='$rid'";
+	} else {
+	    $sql = "UPDATE interface set status='inactive' where rid='$rid'";
+	}
 	debug("SQL: $sql");
 	my $sth = $dbh->prepare($sql)
 		or die "Can't prepare $sql: $dbh->errstr\n";
@@ -533,6 +561,11 @@ sub find_interface_id($$$$) {
         $sth->bind_param(":rid",$rid);
         $sth->bind_param(":name",$int);
         debug("SQL: $sql"); 
+    } elsif($DB_TYPE =~ /postgres/i) {
+        $sql = "SELECT id, description,speed FROM interface WHERE rid=$rid AND name='$int'";
+        $sth = $dbh->prepare($sql)
+            or die "Can't prepare $sql: $dbh->errstr\n";
+        debug("SQL: $sql"); 
     }
 
     my $rv = $sth->execute
@@ -549,7 +582,9 @@ sub find_interface_id($$$$) {
             $sql = "INSERT INTO interface (id,name, rid, speed, description) VALUES(0,'$int', $rid, $speed, '$desc')";
         } elsif($DB_TYPE =~ /oracle/i) {
             $sql = "INSERT INTO interface (id,name, rid, speed, description) VALUES(interface_seq.nextval,'$int', $rid, $speed, '$desc')";
-        }
+        } elsif($DB_TYPE =~ /postgres/i) {
+            $sql = "INSERT INTO interface (name, rid, speed, description) VALUES('$int', $rid, $speed, '$desc')";
+	}
         print "adding.\n";
         &sql_insert($sql);
         $iid = &find_interface_id( $rid, $int, $desc, $speed );
@@ -580,7 +615,11 @@ sub find_interface_id($$$$) {
         }
 
         if($SET_INACTIVE) {
-            $sql = "UPDATE interface set status='active' WHERE id=$iid";
+	    if($DB_TYPE =~ /postgres/i) {
+		$sql = "UPDATE interface set status='true' WHERE id=$iid";
+	    } else {
+		$sql = "UPDATE interface set status='active' WHERE id=$iid";
+	    }
             &sql_insert($sql);	
         }
     }
@@ -771,7 +810,12 @@ sub create_graphing_tables() {
             $sth = $dbh->prepare($sql)
                 or die "Can't prepare $sql: $dbh->errstr\n";
             $sth->bind_param(":graph",$graph);
-        }
+        } elsif($DB_TYPE =~ /postgres/i) {
+            $sql = "SELECT * FROM options_table where graphname='$graph'";
+            debug("SQL: $sql");
+            $sth = $dbh->prepare($sql)
+                or die "Can't prepare $sql: $dbh->errstr\n";
+	}
         my $rv = $sth->execute
             or die "can't execute the query: $sth->errstr\n";
         my @row = $sth->fetchrow_array();
@@ -898,7 +942,7 @@ sub main {
            $dbh->{RowCacheSize} = 16;
 
         } elsif($DB_TYPE =~ /postgres/i) {
-            # insert postgres connect here
+	    $dbh = DBI->connect("DBI:Pg:dbname=$db_db;host=$db_host",$db_user,$db_pass);
         } else {
             die "You have no database type....\n";
         }
@@ -917,7 +961,7 @@ sub main {
         &sql_insert($sql);
         $sql = "SHOW TABLES";
     } elsif($DB_TYPE =~ /postgres/i) {
-        # insert postgres show tables command
+        $sql = "SELECT table_name FROM information_schema.tables WHERE table_schema='public' AND table_type='BASE TABLE'";
     }
 
     $sth = $dbh->prepare($sql);
