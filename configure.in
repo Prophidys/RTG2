@@ -210,7 +210,7 @@ dnl else
 
 dnl ****************** Begin MySQL checking ***********************
 AC_MSG_CHECKING(mysql)
-AC_DEFUN(MYSQL_LIB_CHK,[
+AC_DEFUN([MYSQL_LIB_CHK],[
   str="$1/libmysqlclient.*"
   for j in `echo $str`; do
     if test -r $j; then
