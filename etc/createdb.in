@@ -65,6 +65,7 @@ CREATE TABLE ifInOctets (
   id int(11) NOT NULL default '0',
   dtime datetime NOT NULL default '0000-00-00 00:00:00',
   counter bigint(20) NOT NULL default '0',
+  rate DOUBLE NOT NULL,
   KEY ifInOctets_idx (dtime)
 );
 
@@ -76,6 +77,7 @@ CREATE TABLE ifOutOctets (
   id int(11) NOT NULL default '0',
   dtime datetime NOT NULL default '0000-00-00 00:00:00',
   counter bigint(20) NOT NULL default '0',
+  rate DOUBLE NOT NULL,
   KEY ifOutOctets_idx (dtime)
 );
 
@@ -87,6 +89,7 @@ CREATE TABLE ifInUcastPkts (
   id int(11) NOT NULL default '0',
   dtime datetime NOT NULL default '0000-00-00 00:00:00',
   counter bigint(20) NOT NULL default '0',
+  rate DOUBLE NOT NULL,
   KEY ifInUcastPkts_idx (dtime)
 );
 
@@ -98,6 +101,7 @@ CREATE TABLE ifOutUcastPkts (
   id int(11) NOT NULL default '0',
   dtime datetime NOT NULL default '0000-00-00 00:00:00',
   counter bigint(20) NOT NULL default '0',
+  rate DOUBLE NOT NULL,
   KEY ifOutUcastPkts_idx (dtime)
 );
 
@@ -109,6 +113,7 @@ CREATE TABLE ifInErrors (
   id int(11) NOT NULL default '0',
   dtime datetime NOT NULL default '0000-00-00 00:00:00',
   counter bigint(20) NOT NULL default '0',
+  rate DOUBLE NOT NULL,
   KEY ifInErrors_idx (dtime)
 );
 EOT
