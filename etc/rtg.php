@@ -39,6 +39,48 @@
    $emin = $_GET['emin'];
  }
 
+
+function output_plot($rid, $typein, $typeout, $title, $iid, $xplot, $yplot, $bt, $et, $options, $loptions, $aggr)
+{
+    if (! $xplot) {
+        $xplot = 500;
+    }
+    if (! $yplot) {
+        $yplot = 150;
+    }
+
+    $nargs = "PO=$title:$xplot:$yplot:$options:$bt:$et";
+    $cnt = 0;
+    $cin = array();
+    $cout = array();
+    foreach ($iid as $i) {
+        if ($typein != "") {
+            $nargs .= "&DO=$cnt:" . $typein . "_$rid:$i";
+            $nargs .= "&LO=$cnt:$cnt:$loptions:In";
+            array_push($cin, $cnt);
+            $cnt++;
+        }
+        if ($typeout != "") {
+            $nargs .= "&DO=$cnt:" . $typeout . "_$rid:$i";
+            $nargs .= "&LO=$cnt:$cnt:$loptions:Out";
+            array_push($cout, $cnt);
+            $cnt++;
+        }
+    }
+    if ($aggr) {
+            if ($loptions != "") { $loptions .= ","; }
+            if ($typein != "") {
+                $nargs .= "&LO=$cnt:" . join(",", $cin) . ":aggr,$loptions:Aggregate+In";
+                $cnt++;
+            }
+            if ($typeout != "") {
+                $nargs .= "&LO=$cnt:" . join(",", $cout) . ":aggr,$loptions:Aggregate+Out";
+                $cnt++;
+            }
+    }
+    print "<IMG SRC='rtgplot.cgi?" . $nargs . "'><BR>\n";
+}
+
  # Query wrapper
  function query($dbc, $q) {
    if ($pgsql) 
@@ -200,31 +242,26 @@ if (($bt || $smonth) && $iid) {
   #   print "<BR>No Data Found on Interface for Given Range.<BR>\n";
   #}
   #else {
-    $args = "t1=ifInOctets_$rid&t2=ifOutOctets_$rid&begin=$bt&end=$et&units=bits/s&factor=8";
-    foreach ($iid as $value) {
-      $args="$args&iid=$value";
-    }
+
+    # Stuff still to implement!
     if ($scalex) $args = "$args&scalex=yes";
     if ($scaley) $args = "$args&scaley=yes";
-    if ($xplot) $args = "$args&xplot=$xplot";
-    if ($yplot) $args = "$args&yplot=$yplot";
     if ($borderb) $args = "$args&borderb=$borderb";
-    if ($aggr) $args = "$args&aggr=yes";
-    if ($percentile) $args = "$args&percentile=$nth";
-    print "<IMG SRC=rtgplot.cgi?$args><BR>\n";
-    $args = "t1=ifInUcastPkts_$rid&t2=ifOutUcastPkts_$rid&begin=$bt&end=$et&units=pkts/s";
-    foreach ($iid as $value) {
-      $args="$args&iid=$value";
+
+    $lop = "";
+    if ($percentile) {
+       $lop = "percentile=$nth";
     }
-    if ($scalex) $args = "$args&scalex=yes";
-    if ($xplot) $args = "$args&xplot=$xplot";
-    if ($yplot) $args = "$args&yplot=$yplot";
-    if ($borderb) $args = "$args&borderb=$borderb";
-    if ($aggr) $args = "$args&aggr=yes";
-    if ($percentile) $args = "$args&percentile=$nth";
-    print "<IMG SRC=rtgplot.cgi?$args><BR>\n";
-    if ($errors) 
-       print "<IMG SRC=rtgplot.cgi?t1=ifInErrors_$rid&begin=$bt&end=$et&units=errors&impulses=yes>\n";
+
+    $ag = 0;
+    if ($aggr) { $ag = 1; }
+
+    output_plot($rid, "ifInOctets", "ifOutOctets", "Traffic+In/Out", $iid, $xplot, $yplot, $bt, $et, "", $lop, $ag);
+    output_plot($rid, "ifInUcastPkts", "ifOutUcastPkts", "Packets+In/Out", $iid, $xplot, $yplot, $bt, $et, "units=pkts", $lop, $ag);
+
+    if ($errors) {
+       output_plot($rid, "ifInErrors", "", "Errors+In", $iid, $xplot, $yplot, $bt, $et, "units=pkts,impulse", "", "");
+    }
 #  }
 } 
 
