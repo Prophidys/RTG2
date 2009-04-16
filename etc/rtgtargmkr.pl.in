@@ -19,7 +19,7 @@ $conf_file   = "rtg.conf";       # RTGpoll and RTGplot configurations
 $INFO        = 1;                # Print informational messages
 $DEBUG       = 0;                # Print debug messages
 $DBOFF       = 0;                # Turn database queries off (debug)
-$NEW_TARGET_FORMAT = 0;          # Backwards compatibility. 0 for old format.
+$NEW_TARGET_FORMAT = 1;          # Backwards compatibility. 0 for old format.
 
 # No edits needed beyond this point
 #########################################################################
