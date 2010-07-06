@@ -379,8 +379,8 @@ sub update_tableid_mappings($$) {
 
     my $rv = $sth->execute
       or die "can't execute the query: $sth->errstr\n";
-    my @row = $sth->fetchrow_array();
-    unless ( $#row == 0 ) {
+    my @rows = $sth->fetchall_arrayref();
+    if ( $sth->rows == 0 ) {
         print "No iid/tablename found for $table_name/$iid...";
         $sql = "INSERT INTO table2iid_mapping (tablename,id,dtime) VALUES('$table_name','$iid','".time."')";
         print "adding.\n";
@@ -818,8 +818,8 @@ sub create_graphing_tables() {
 	}
         my $rv = $sth->execute
             or die "can't execute the query: $sth->errstr\n";
-        my @row = $sth->fetchrow_array();
-        unless ( $#row == 0 ) {
+        my @rows = $sth->fetchall_arrayref();
+        if ( $sth->rows == 0 ) {
             $sql = "INSERT INTO options_table VALUES ('$graph','@{$table_options{$graph}}','$table_class{$graph}')";
             &sql_insert($sql);
         } 
@@ -837,8 +837,8 @@ sub create_graphing_tables() {
                 or die "Can't prepare $sql: $dbh->errstr\n";
             my $rv = $sth->execute
                 or die "can't execute the query: $sth->errstr\n";
-            my @row = $sth->fetchrow_array();
-            unless ( $#row == 0 ) {
+            my @rows = $sth->fetchall_arrayref();
+            if ( $sth->rows == 0 ) {
                 print "No row found for $graph and $table, adding...\n" if $INFO;
                 $sql = "INSERT INTO mapping_table VALUES ('$graph','$table')";
                 &sql_insert($sql);
@@ -1111,8 +1111,8 @@ print localtime()."\n";
             $sth = $dbh->prepare($sql);
             $sth->execute;
 
-            my @row = $sth->fetchrow_array();
-            unless($#row == 0) {
+            my @rows = $sth->fetchall_arrayref();
+            if ($sth->rows == 0) {
                 $sql = "INSERT INTO router_snmp_table (rid,hostname,ip,community,snmpver) VALUES \
                     ($rid,'$router','$ip','$communities{$router}','$snmp_ver')";
             } else {
