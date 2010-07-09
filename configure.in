@@ -246,6 +246,7 @@ for i in $MYSQL_DIR /usr/local /usr/local/mysql; do
    MYSQL_LIB_CHK($i/lib)
    MYSQL_LIB_CHK($i/lib64)
    MYSQL_LIB_CHK($i/lib/mysql)
+   MYSQL_LIB_CHK($i/lib64/mysql)
 done
 
 if test -d "$MYSQL_LIB_DIR"; then
