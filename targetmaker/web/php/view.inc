@@ -608,12 +608,16 @@ function displaystats($dbc,$stat,$host,$id) {
 	$selectResult=query($dbc,$selectQuery);
 	$selectRow=fetch_object($selectResult);
 
-	$header_array[locale("TABLE_HOST")] = $host;
-	$header_array[locale("TABLE_SYSDESCR")] = getsysDescr($dbc,$host);
-	$header_array[locale("TABLE_INTERFACE")] = $selectRow->description;
-	$header_array[locale("TABLE_DESCRIPTION")] = $selectRow->name;
+	$header_array[locale("TABLE_HOST")] = htmlspecialchars($host);
+	$header_array[locale("TABLE_SYSDESCR")] =
+        htmlspecialchars(getsysDescr($dbc,$host));
+	$header_array[locale("TABLE_INTERFACE")] =
+        htmlspecialchars($selectRow->description);
+	$header_array[locale("TABLE_DESCRIPTION")] =
+        htmlspecialchars($selectRow->name);
 	if(preg_match('/network$/',$class)) {
-		$header_array[locale("TABLE_SPEED")] = $selectRow->speed;
+		$header_array[locale("TABLE_SPEED")] =
+            htmlspecialchars($selectRow->speed);
 	}
 
 	$host_header = print_host_header($header_array);
