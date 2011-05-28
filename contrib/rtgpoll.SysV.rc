@@ -1,0 +1,75 @@
+#!/bin/bash
+#
+# rtgpoll       Shell script to manage RTG on SysV systems
+#
+# Author: Brandon Ewing nicotine@warningg.com
+#
+# chkconfig: 2345 88 12
+# description: RTG is a polling mechanism for SNMP
+
+# Source function library.
+. /etc/init.d/functions
+
+PIDFILE=/var/run/rtgpoll.pid
+CFGFILE=/usr/local/etc/rtg.conf
+TARGETFILE=/usr/local/etc/targets.cfg
+OPTIONS="-c $CFGFILE -t $TARGETFILE -v"
+
+if [ -f /etc/sysconfig/rtg ]; then
+        . /etc/sysconfig/rtg
+fi
+
+
+start() {
+        echo -n "Starting rtgpoll: "
+        if [ -f $PIDFILE ]; then
+                PID=`cat $PIDFILE`
+                echo rtgpoll already running: $PID
+                exit 2;
+        else
+                daemon  /usr/local/bin/rtgpoll $OPTIONS
+                RETVAL=$?
+                echo
+                [ $RETVAL -eq 0 ] && touch /var/lock/subsys/rtgpoll
+                return $RETVAL
+        fi
+
+}
+
+stop() {
+        echo -n "Shutting down RTG: "
+        killproc rtgpoll
+        echo
+        rm -f /var/lock/subsys/rtgpoll
+        return 0
+}
+
+reload() {
+        echo -n "Reloading RTG: "
+        killproc rtgpoll -HUP
+        return 0
+}
+
+case "$1" in
+    start)
+        start
+        ;;
+    stop)
+        stop
+        ;;
+    status)
+        status rtgpoll
+        ;;
+    restart)
+        stop
+        start
+        ;;
+    reload)
+        reload
+        ;;
+    *)
+        echo "Usage:  {start|stop|status|restart|reload}"
+        exit 1
+        ;;
+esac
+exit $?
