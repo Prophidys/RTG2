@@ -13,11 +13,12 @@
 PIDFILE=/var/run/rtgpoll.pid
 CFGFILE=/usr/local/etc/rtg.conf
 TARGETFILE=/usr/local/etc/targets.cfg
-OPTIONS="-c $CFGFILE -t $TARGETFILE -v"
 
 if [ -f /etc/sysconfig/rtg ]; then
         . /etc/sysconfig/rtg
 fi
+
+OPTIONS="-c $CFGFILE -t $TARGETFILE -v"
 
 
 start() {
