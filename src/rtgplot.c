@@ -1044,7 +1044,8 @@ void plot_scale(gdImagePtr *img, plot_obj_t *graph) {
 
         for (i = 0 ; i < xticks ; i++ ) {
             if (i % coeff == 0 ) {
-                seconds += 86400;
+                // Issue #11 : Wrong place of increment
+		//seconds += 86400;
                 thetime = localtime(&seconds);
 		if (set->verbose >= HIGH)
 			fprintf(dfp, "Labeling %d %d %d:%d:%d as %s.\n", 
@@ -1055,6 +1056,7 @@ void plot_scale(gdImagePtr *img, plot_obj_t *graph) {
                 gdImageString(*img, gdFontSmall,(coeff*(graph->image.xplot_area-skip))/xticks/2 +(i*(graph->image.xplot_area-skip))/xticks + skip + BORDER_L -7 ,
                     BORDER_T + graph->image.yplot_area +5, string, std_colors[black]);
                 gdImageSetStyle(*img, styleDottedDark, 3);
+		seconds += 86400;
             } else {
                 gdImageSetStyle(*img, styleDottedLight, 3);
             }
