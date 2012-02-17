@@ -8,7 +8,7 @@
   header("Cache-Control: no-cache, must-revalidate");
   header("Pragma: no-cache");
 
-  print "<HTML>\n<!-- RTG Version $VERSION -->\n<HEAD>\n";
+  print "<HTML>\n<!-- RTG2 Version $VERSION -->\n<HEAD>\n";
 
   /* Connect to RTG MySQL Database */
   $dbc=@mysql_connect ($host, $user, $pass) or
@@ -41,7 +41,7 @@
   }
 
   # Generate Title 
-  echo "<TITLE>RTG: ";
+  echo "<TITLE>RTG2: ";
   if ($rid && $iid) echo "$router: $name";
   else if ($rid && !$iid) echo "$router";
   echo "</TITLE>\n";
@@ -57,7 +57,7 @@
 
 </HEAD>
 <BODY BGCOLOR="ffffff">
-<A HREF="http://rtg.sourceforge.net" ALT="[RTG Home Page]">
+<A HREF="http://rtg2.googlecode.com" ALT="[RTG2 Home Page]">
 <IMG SRC="rtg.png" BORDER="0"></A><P><HR>
 
 <?php
@@ -155,7 +155,7 @@
 <HR>
 <FONT FACE="Arial" SIZE="2">
 <?php
- print "<A HREF=\"http://rtg.sourceforge.net\">RTG</A> Version $VERSION</FONT>";
+ print "<A HREF=\"http://rtg2.googlecode.com\">RTG2</A> Version $VERSION</FONT>";
 ?>
 </BODY>
 </HTML>

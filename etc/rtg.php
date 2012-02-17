@@ -1,7 +1,7 @@
 <?php
   include('./common.php');
 
-  print "<HTML>\n<!-- RTG Version $VERSION -->\n<HEAD>\n";
+  print "<HTML>\n<!-- RTG2 Version $VERSION -->\n<HEAD>\n";
 
   /* Connect to RTG Database */
  if ($pgsql) {
@@ -131,7 +131,7 @@ function output_plot($rid, $typein, $typeout, $title, $iid, $xplot, $yplot, $bt,
 
 </HEAD>
 <BODY BACKGROUND="rtgback.png" BGCOLOR="ffffff">
-<A HREF="http://rtg.sourceforge.net" ALT="[RTG Home Page]">
+<A HREF="http://rtg2.googlecode.com" ALT="[RTG22 Home Page]">
 <IMG SRC="rtg.png" BORDER="0">
 </A>
 <P>
@@ -278,7 +278,7 @@ else
 <HR>
 <FONT FACE="Arial" SIZE="2">
 <?php
- print "<A HREF=\"http://rtg.sourceforge.net\">RTG</A> Version $VERSION</FONT>";
+ print "<A HREF=\"http://rtg2.googlecode.com\">RTG2</A> Version $VERSION</FONT>";
 ?>
 </BODY>
 </HTML>
