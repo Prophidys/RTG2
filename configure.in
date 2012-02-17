@@ -111,7 +111,7 @@ dnl Determine RTG home installation path for script substitution
 if test "x$prefix" != "xNONE"; then
     RTG_HOME=$prefix 
 else 
-    RTG_HOME=/usr/local/rtg
+    RTG_HOME=/usr/local/rtg2
 fi
 AC_DEFINE_UNQUOTED(RTG_HOME, "$RTG_HOME", RTG root installation prefix)
 
