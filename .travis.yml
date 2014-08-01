@@ -3,5 +3,5 @@ compiler:
   - gcc
 before_install: 
   - sudo apt-get update -q
-  - sudo apt-get install -qq autoconf libltdl-dev libpng12-dev libmysqlclient-dev libmysqld-dev bison flex libgd2-xpm-dev
+  - sudo apt-get install -qq autoconf libltdl-dev libpng12-dev libmysqlclient-dev libmysqld-dev bison flex libgd2-xpm-dev libsnmp-dev
 script: ./bootstrap.sh && ./configure && make
