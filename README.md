@@ -2,7 +2,7 @@
 
 
 RTG README
-----------
+==========
 
 Contents:
  1. Introduction
@@ -24,6 +24,7 @@ Contents:
 
 
 1. Introduction
+---------------
 
 RTG is a flexible, scalable, high-performance SNMP statistics monitoring
 system.  It is designed for enterprises and service providers that need to
@@ -48,6 +49,7 @@ Cricket.  Please see the FAQ.
 
 
 2. Prerequisites
+----------------
 
 RTG comes as C source code and is intended to run on UNIX systems.  RTG
 requires a UNIX system with POSIX thread support, 64-bit long integers and
@@ -66,29 +68,30 @@ get the most out of RTG, it is strongly recommended that you also install:
 
 
 3. Quick start
+--------------
 
 RTG is complex to setup, so please read all of the documentation.  
 
-  a. Build RTG and install into default location /usr/local/rtg:
-         $ gzip -d rtg-x.y.tar.gz
-         $ tar -xvf rtg-x.y.tar
-	 $ cd rtg-x.y/
-         $ ./configure
-	 $ make
-	 # make install
+  a. Build RTG and install into default location /usr/local/rtg2:
+    $ git clone git@github.com:Prophidys/RTG2.git
+    $ cd RTG2/
+    $ ./boostrap.sh
+    $ ./configure
+    $ make
+    # make install
   b. Make certain the MySQL database is installed and running.
   c. Configure the database.  You must know the MySQL root password.
      The createdb script will setup the database for RTG:
-         $ /usr/local/rtg/etc/createdb mysqlroot
-  d. Edit the /usr/local/rtg/etc/routers file, adding each router you wish
+         $ /usr/local/rtg2/etc/createdb mysqlroot
+  d. Edit the /usr/local/rtg2/etc/routers file, adding each router you wish
      to SNMP poll, one per line.  To specify a per-router non-default 
      community string, add "router:community" in the routers file.
      To specify a per-router non-default response bit width, add
      "router:community:bits" in the routers file.
-  e  Run the /usr/local/rtg/etc/rtgtargmkr.pl script to manage the RTG
+  e  Run the /usr/local/rtg2/etc/rtgtargmkr.pl script to manage the RTG
      target file.  The first run will create a targets.cfg file. 
   f. Start up the poller to use the target list:
-         $ /usr/local/rtg/bin/rtgpoll -v -t targets.cfg
+         $ /usr/local/rtg2/bin/rtgpoll -v -t targets.cfg
      If the poller does not find a configuration file, it will create
      one in the current directory called "rtg.conf".  You want to
      modify this file to suit your installation.  If the poller is
@@ -100,17 +103,18 @@ RTG is complex to setup, so please read all of the documentation.
      instructions.
 
 
-4. Compiling 
+4. Compiling
+------------
 
 Please also see the OS-Specific configuration section of this document
-for details on building RTG on specific platforms.
+for details on building RTG2 on specific platforms.
 
 RTG uses GNU autoconf to determine your build type.  Compiling should be a
 simple matter of:
 
-  ./configure
-  make 
-  make install
+    ./configure
+    make 
+    make install
 
 See "./configure --help" for a complete list of build options.
 
@@ -136,6 +140,7 @@ the Troubleshooting section of this document.
 
 
 5. Configuration
+----------------
 
 rtgpoll takes a number of options, rtgpoll -h displays the options.
 rtgpoll uses two ASCII files to direct its actions: a configuration file
@@ -147,7 +152,7 @@ A single rtg.conf file can control all programs (including rtgpoll,
 rtgplot, *.php and *.pl).  Each program attempts to find an rtg.conf
 in the following path order:
  1. ./rtg.conf
- 2. /usr/local/rtg/etc/rtg.conf
+ 2. /usr/local/rtg2/etc/rtg.conf
  3. /etc/rtg.conf
 
 If rtgpoll or rtgplot cannot find an rtg.conf file in any of these 
@@ -155,17 +160,17 @@ paths, it will attempt to create one in the current working directory.
 Most users maintain a master rtg.conf file customized for their 
 environment.  rtg.conf contains the following configurable fields:
 
-  Interval         300
-  HighSkewSlop     3
-  LowSkewSlop      .5
-  OutOfRange       93750000000
-  SNMP_Ver         1
-  SNMP_Port       161
-  DB_Host          localhost
-  DB_Database      rtg
-  DB_User          snmp
-  DB_Pass          rtgdefault
-  Threads          5
+    Interval         300
+    HighSkewSlop     3
+    LowSkewSlop      .5
+    OutOfRange       93750000000
+    SNMP_Ver         1
+    SNMP_Port       161
+    DB_Host          localhost
+    DB_Database      rtg
+    DB_User          snmp
+    DB_Pass          rtgdefault
+    Threads          5
 
 Interval is the time between successive polls of the target list,
 default is 300 seconds (5 minutes).
@@ -251,6 +256,8 @@ reporting tools automatically calculate rate.
 
 
 6. Monitoring Gauges
+--------------------
+
 RTG can monitor OIDs that return a gauge value allowing one to monitor
 items such as temperature, CPU, users, etc.  If an entry in the target
 file has 0 (zero) specified as the OID bit width instead of 64 or 32,
@@ -263,6 +270,7 @@ said trivial changes are implemented.
 
 
 7. Graphs and HTML Generation
+-----------------------------
 
 RTG includes PHP pages to serve interactive graphical traffic plots via
 the web.  Using PHP demonstrates RTG best; we strongly recommend using
@@ -307,6 +315,7 @@ argument.
 
 
 8. Generating Reports
+---------------------
 
 RTG includes two Perl scripts in $prefix/bin that generate per-customer
 traffic reports.  These Perl scripts use the Perl-MySQL DBI (see the
@@ -355,6 +364,7 @@ any contributed Perl reporting scripts (or clean up our messy Perl).
 
 
 9. Maintenance
+--------------
 
 Most installations run the rtgtargmkr.pl script regularly via a cron job.  
 rtgtargmkr will add new routers and interfaces as they appear in the
@@ -374,6 +384,7 @@ send rtgpoll a -HUP signal to force the poller to re-read the target list.
 
 
 10. Troubleshooting
+-------------------
 
 If you are experiencing problems with RTG, please first consult the FAQ.  
 You may find the RTG mailing list archives helpful.  Questions not
@@ -388,6 +399,7 @@ help you (or the developers) solve the problem.
 
 
 11. OS-Specific Configuration
+-----------------------------
 
 FreeBSD: 
  a. The FreeBSD ports are the easiest way to install the required MySQL and
@@ -415,6 +427,7 @@ Linux:
 
 
 12. Security
+------------
 
 RTG uses MySQL with a default password of "rtgdefault" solely to 
 ease installation.  The password should be changed as soon as RTG is 
@@ -425,6 +438,7 @@ refer to the MySQL website for details on securing your database.
 
 
 13. Installing the MySQL Perl DBI
+---------------------------------
 
 The Perl reports and Perl configuration generators use the Perl DBI to
 interface with the MySQL database.
@@ -443,6 +457,7 @@ interface with the MySQL database.
 
 
 14. Future
+----------
 
 RTG is intended to be a foundation upon which to build.  Modules, features 
 and patches are always welcome and appreciated.  To contribute, see 
@@ -450,6 +465,7 @@ the "TODO" file.
 
 
 15. Acknowledgments
+-------------------
 
 RTG was inspired by the likes of MRTG, RRDtool (Tobias Oetiker, Dave Rand)
 and Cricket (Jeff Allen).  RTG uses (and useless without) the excellent 
