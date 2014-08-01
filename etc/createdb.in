@@ -50,8 +50,8 @@ CREATE TABLE router (
 CREATE TABLE interface (
   id int(11) unsigned NOT NULL auto_increment,
   name char(255) NOT NULL default '',
-  rid int(11) NOT NULL default '0',
-  speed bigint(11) default NULL,
+  rid int(11) unsigned NOT NULL default '0',
+  speed bigint(11) unsigned default NULL,
   description char(255) default NULL,
   status enum('active','inactive') default 'active',
   PRIMARY KEY  (id)
@@ -62,10 +62,10 @@ CREATE TABLE interface (
 #
 
 CREATE TABLE ifInOctets (
-  id int(11) NOT NULL default '0',
+  id int(11) unsigned NOT NULL default '0',
   dtime datetime NOT NULL default '0000-00-00 00:00:00',
-  counter bigint(20) NOT NULL default '0',
-  rate DOUBLE NOT NULL,
+  counter bigint(20) unsigned NOT NULL default '0',
+  rate unsigned DOUBLE NOT NULL,
   KEY ifInOctets_idx (dtime)
 );
 
@@ -74,10 +74,10 @@ CREATE TABLE ifInOctets (
 #
 
 CREATE TABLE ifOutOctets (
-  id int(11) NOT NULL default '0',
+  id int(11) unsigned NOT NULL default '0',
   dtime datetime NOT NULL default '0000-00-00 00:00:00',
-  counter bigint(20) NOT NULL default '0',
-  rate DOUBLE NOT NULL,
+  counter bigint(20) unsigned NOT NULL default '0',
+  rate DOUBLE unsigned NOT NULL,
   KEY ifOutOctets_idx (dtime)
 );
 
@@ -86,10 +86,10 @@ CREATE TABLE ifOutOctets (
 #
 
 CREATE TABLE ifInUcastPkts (
-  id int(11) NOT NULL default '0',
+  id int(11) unsigned NOT NULL default '0',
   dtime datetime NOT NULL default '0000-00-00 00:00:00',
-  counter bigint(20) NOT NULL default '0',
-  rate DOUBLE NOT NULL,
+  counter bigint(20) unsigned NOT NULL default '0',
+  rate DOUBLE unsigned NOT NULL,
   KEY ifInUcastPkts_idx (dtime)
 );
 
@@ -98,10 +98,10 @@ CREATE TABLE ifInUcastPkts (
 #
 
 CREATE TABLE ifOutUcastPkts (
-  id int(11) NOT NULL default '0',
+  id int(11) unsigned NOT NULL default '0',
   dtime datetime NOT NULL default '0000-00-00 00:00:00',
-  counter bigint(20) NOT NULL default '0',
-  rate DOUBLE NOT NULL,
+  counter bigint(20) unsigned NOT NULL default '0',
+  rate DOUBLE unsigned NOT NULL,
   KEY ifOutUcastPkts_idx (dtime)
 );
 
@@ -110,10 +110,10 @@ CREATE TABLE ifOutUcastPkts (
 #
 
 CREATE TABLE ifInErrors (
-  id int(11) NOT NULL default '0',
+  id int(11) unsigned NOT NULL default '0',
   dtime datetime NOT NULL default '0000-00-00 00:00:00',
-  counter bigint(20) NOT NULL default '0',
-  rate DOUBLE NOT NULL,
+  counter bigint(20) unsigned NOT NULL default '0',
+  rate DOUBLE unsigned NOT NULL,
   KEY ifInErrors_idx (dtime)
 );
 EOT
