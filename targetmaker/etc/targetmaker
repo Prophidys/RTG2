@@ -24,7 +24,7 @@ $CONFIG_FILE = "/opt/rtg/targetmaker/etc/targetmaker.cfg";
 die "Cannot find file $CONFIG_FILE, exiting...\n" unless -f $CONFIG_FILE;
 require $CONFIG_FILE;
 
-@configs = ($RTG_CONF_FILE, "rtg.conf", "/usr/local/rtg/etc/rtg.conf", "/etc/rtg.conf","/opt/rtg/etc/rtg.conf");
+@configs = ($RTG_CONF_FILE, "rtg.conf", "/usr/local/rtg2/etc/rtg.conf", "/etc/rtg.conf","/opt/rtg/etc/rtg.conf");
 
 ##
 ## Settings now moved to the $CONFIG_FILE
