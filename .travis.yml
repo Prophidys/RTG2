@@ -1,4 +1,5 @@
 language: c
 compiler:
   - gcc
-script: ./configure && make
+before_install: sudo apt-get install -qq autoconf libltdl-dev libpng12-dev libmysqlclient-dev libmysqld-dev bison flex
+script: ./bootstrap.sh && ./configure && make
