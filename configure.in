@@ -6,7 +6,7 @@
 AC_INIT(src/rtg.h)
 AC_CONFIG_AUX_DIR(config)
 AC_SUBST(ac_aux_dir)
-AM_INIT_AUTOMAKE(rtg2, 0.9.1)
+AM_INIT_AUTOMAKE(rtg2, 2.0.0)
 AC_SUBST(VERSION)
 AM_CONFIG_HEADER(config/config.h)
 AC_CANONICAL_HOST
@@ -85,6 +85,7 @@ AC_CHECK_LIB(z, deflate)
 dnl check for libtool
 AC_MSG_CHECKING(libtool)
 for i in /usr /usr/local; do
+	test -f $i/lib/x86_64-linux-gnu/libltdl.a -o -f $i/lib/libltdl.so && LT_LIBDIR=$i/lib/x86_64-linux-gnu/
 	test -f $i/lib/libltdl.a -o -f $i/lib/libltdl.so && LT_LIBDIR=$i/lib
 	test -f $i/lib64/libltdl.a -o -f $i/lib64/libltdl.so && LT_LIBDIR=$i/lib64
 done
@@ -228,7 +229,7 @@ else
   done
 fi
 
-for i in $MYSQL_DIR /usr/local /usr/local/mysql; do
+for i in $MYSQL_DIR /usr /usr/local /usr/local/mysql; do
    test -f $i/include/mysql.h                    && MYSQL_INC_DIR=$i/include
    test -f $i/include/mysql/mysql.h              && MYSQL_INC_DIR=$i/include/mysql
    test -f $i/mysql/include/mysql.h              && MYSQL_INC_DIR=$i/mysql/include
@@ -242,11 +243,12 @@ if test -z "$MYSQL_INC_DIR"; then
   fi
 fi
 
-for i in $MYSQL_DIR /usr/local /usr/local/mysql; do
+for i in $MYSQL_DIR /usr /usr/local /usr/local/mysql; do
    MYSQL_LIB_CHK($i/lib64)
    MYSQL_LIB_CHK($i/lib)
    MYSQL_LIB_CHK($i/lib64/mysql)
    MYSQL_LIB_CHK($i/lib/mysql)
+   MYSQL_LIB_CHK($i/lib/x86_64-linux-gnu/)
 done
 
 if test -d "$MYSQL_LIB_DIR"; then
