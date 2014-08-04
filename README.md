@@ -72,33 +72,43 @@ get the most out of RTG, it is strongly recommended that you also install:
 
 RTG is complex to setup, so please read all of the documentation.  
 
-  a. Build RTG and install into default location /usr/local/rtg2:
+### Build RTG and install into default location /usr/local/rtg2:
+
     $ git clone git@github.com:Prophidys/RTG2.git
     $ cd RTG2/
     $ ./boostrap.sh
     $ ./configure
     $ make
     # make install
-  b. Make certain the MySQL database is installed and running.
-  c. Configure the database.  You must know the MySQL root password.
+    
+### Make certain the MySQL database is installed and running.
+
+### Configure the database.  You must know the MySQL root password.
      The createdb script will setup the database for RTG:
-         $ /usr/local/rtg2/etc/createdb mysqlroot
-  d. Edit the /usr/local/rtg2/etc/routers file, adding each router you wish
+
+    $ /usr/local/rtg2/etc/createdb mysqlroot
+
+### Edit the /usr/local/rtg2/etc/routers file, adding each router you wish
      to SNMP poll, one per line.  To specify a per-router non-default 
      community string, add "router:community" in the routers file.
      To specify a per-router non-default response bit width, add
      "router:community:bits" in the routers file.
-  e  Run the /usr/local/rtg2/etc/rtgtargmkr.pl script to manage the RTG
-     target file.  The first run will create a targets.cfg file. 
-  f. Start up the poller to use the target list:
-         $ /usr/local/rtg2/bin/rtgpoll -v -t targets.cfg
-     If the poller does not find a configuration file, it will create
-     one in the current directory called "rtg.conf".  You want to
-     modify this file to suit your installation.  If the poller is
-     successful, the "Polls" counter in the statistics banner will
-     increase and then a countdown to the next poll is displayed.  
-     The DBInserts should increment after the second polling round.  
-  g. RTG is running.  Manipulate or mine the data in the database as 
+     
+###  Run the /usr/local/rtg2/etc/rtgtargmkr.pl script to manage the RTG
+target file.  The first run will create a targets.cfg file. 
+
+### Start up the poller to use the target list:
+
+    $ /usr/local/rtg2/bin/rtgpoll -v -t targets.cfg
+
+If the poller does not find a configuration file, it will create
+one in the current directory called "rtg.conf".  You want to
+modify this file to suit your installation.  If the poller is
+successful, the "Polls" counter in the statistics banner will
+increase and then a countdown to the next poll is displayed.  
+The DBInserts should increment after the second polling round.  
+
+### RTG is running.  Manipulate or mine the data in the database as 
      needed, or read the remaining sections for graphing and reporting 
      instructions.
 
@@ -213,14 +223,14 @@ PRE RTG-0.8 Format:
 
 where 
 
-  Host        = IP or hostname of target
-  OID         = Full SNMP OID, e.g. .1.3.6.1.2.1.31.1.1.1.10.19
-  64/32/0     = Specify 64/32 bit objects or 0 for gauge objects
-  Community   = SNMP Community
-  Table       = MySQL table in the database to use
-  ID          = A unique ID that is used with each insert
-  OOR         = The maximum delta of an object's counter within one interval.
-  Description = Free text
+    Host        = IP or hostname of target
+    OID         = Full SNMP OID, e.g. .1.3.6.1.2.1.31.1.1.1.10.19
+    64/32/0     = Specify 64/32 bit objects or 0 for gauge objects
+    Community   = SNMP Community
+    Table       = MySQL table in the database to use
+    ID          = A unique ID that is used with each insert
+    OOR         = The maximum delta of an object's counter within one interval.
+    Description = Free text
 
 RTG-0.8 and beyond (PRE RTG-0.8 Format Is Still Supported):
 host [hostname] {
