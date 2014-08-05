@@ -32,7 +32,7 @@
 </TITLE>
 </HEAD>
 <BODY BGCOLOR="ffffff">
-<A HREF="http://rtg2.googlecode.com" ALT="[RTG2 Home Page]">
+<A HREF="http://github.com/Prophidys/RTG2" ALT="[RTG2 Home Page]">
 <IMG SRC="rtg.png" BORDER="0">
 </A>
 <P>
@@ -208,7 +208,7 @@ Report: 95th percentile<BR>
 <HR>
 <FONT FACE="Arial" SIZE="2">
 <?php
- print "<A HREF=\"http://rtg2.googlecode.com\">RTG2</A> Version $VERSION</FONT>";
+ print "<A HREF=\"http://github.com/Prophidys/RTG2\">RTG2</A> Version $VERSION</FONT>";
 ?>
 </BODY>
 </HTML>

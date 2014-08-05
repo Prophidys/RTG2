@@ -131,7 +131,7 @@ function output_plot($rid, $typein, $typeout, $title, $iid, $xplot, $yplot, $bt,
 
 </HEAD>
 <BODY BACKGROUND="rtgback.png" BGCOLOR="ffffff">
-<A HREF="http://rtg2.googlecode.com" ALT="[RTG22 Home Page]">
+<A HREF="http://github.com/Prophidys/RTG2" ALT="[RTG2 Home Page]">
 <IMG SRC="rtg.png" BORDER="0">
 </A>
 <P>
@@ -209,6 +209,9 @@ if ($rid && !$iid) {
   echo "<TR><TD>BorderB: \n";
   echo "<TD><INPUT TYPE=TEXT NAME=\"borderb\" SIZE=3 VALUE=\"70\">\n";
   echo "</TABLE>\n";
+  echo "<P>";
+  echo '<INPUT TYPE="SUBMIT" VALUE="Ok">';
+  echo "</FORM>";
 }
 
 if (($bt || $smonth) && $iid) { 
@@ -271,14 +274,11 @@ else
   mysql_close($dbc);
 ?>
 
-<P>
-<INPUT TYPE="SUBMIT" VALUE="Ok">
-</FORM>
 <BR>
 <HR>
 <FONT FACE="Arial" SIZE="2">
 <?php
- print "<A HREF=\"http://rtg2.googlecode.com\">RTG2</A> Version $VERSION</FONT>";
+ print "<A HREF=\"http://github.com/Prophidys/RTG2\">RTG2</A> Version $VERSION</FONT>";
 ?>
 </BODY>
 </HTML>
