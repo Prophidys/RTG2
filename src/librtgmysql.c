@@ -209,18 +209,22 @@ long __db_intSpeed(char *query) {
     MYSQL *mysql = getmysql();
     int result; 
     MYSQL_RES *result2;
-    MYSQL_ROW row;
+    MYSQL_ROW *row;
 
     result = mysql_real_query(mysql, query, strlen(query));
 
     if (result == 0) {
-        result2 = mysql_store_result(&mysql);
+        result2 = mysql_store_result(mysql);
     } else { 
         debug(LOW, "MySQL error: %s\n", mysql_error(mysql));
         return FALSE;
     }
 
     row = mysql_fetch_row(result2);
+
+    if(!row) {
+        return FALSE;
+    }
 
 #ifdef HAVE_STRTOLL
     return strtoll(row[0], NULL, 0);
