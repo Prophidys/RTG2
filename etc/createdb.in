@@ -65,7 +65,7 @@ CREATE TABLE ifInOctets (
   id int(11) unsigned NOT NULL default '0',
   dtime datetime NOT NULL default '0000-00-00 00:00:00',
   counter bigint(20) unsigned NOT NULL default '0',
-  rate unsigned DOUBLE NOT NULL,
+  rate DOUBLE unsigned NOT NULL,
   KEY ifInOctets_idx (dtime)
 );
 
