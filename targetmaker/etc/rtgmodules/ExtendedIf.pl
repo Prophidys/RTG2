@@ -113,18 +113,20 @@ $main::table_class{'MIBII-multicast'} = "network-extended";
 );
 
 $normal_extif = [
-	[ 1, 3, 6, 1, 2, 1, 2,  2, 1, 1 ],        # ifIndex
-	[ 1, 3, 6, 1, 2, 1, 2,  2, 1, 2 ],        # ifDescr
-	[ 1, 3, 6, 1, 2, 1, 2,  2, 1, 5 ],        # ifSpeed
-	[ 1, 3, 6, 1, 2, 1, 31, 1, 1, 1, 18 ],    # ifAlias
-	[ 1, 3, 6, 1, 2, 1, 2,  2, 1, 7 ],        # ifAdminStatus
-	[ 1, 3, 6, 1, 2, 1, 2,  2, 1, 8 ]         # ifOperStatus
+    [ 1, 3, 6, 1, 2, 1, 2,  2, 1, 1 ],        # ifIndex
+    [ 1, 3, 6, 1, 2, 1, 2,  2, 1, 2 ],        # ifDescr
+    [ 1, 3, 6, 1, 2, 1, 2,  2, 1, 5 ],        # ifSpeed
+    [ 1, 3, 6, 1, 2, 1, 31, 1, 1, 1, 15 ],    # ifHighSpeed
+    [ 1, 3, 6, 1, 2, 1, 31, 1, 1, 1, 18 ],    # ifAlias
+    [ 1, 3, 6, 1, 2, 1, 2,  2, 1, 7 ],        # ifAdminStatus
+    [ 1, 3, 6, 1, 2, 1, 2,  2, 1, 8 ]         # ifOperStatus
 ];
 
 $catalyst_extif = [
     [ 1, 3, 6, 1, 2, 1, 2,  2, 1, 1 ],             # ifIndex
     [ 1, 3, 6, 1, 2, 1, 31, 1, 1, 1, 1 ],          # ifXEntry.ifName
     [ 1, 3, 6, 1, 2, 1, 2,  2, 1, 5 ],             # ifSpeed
+    [ 1, 3, 6, 1, 2, 1, 31, 1, 1, 1, 15 ],         # ifHighSpeed
     [ 1, 3, 6, 1, 2, 1, 31, 1, 1, 1, 18 ],    	   # ifAlias
     [ 1, 3, 6, 1, 2, 1, 2,  2, 1, 7 ],             # ifAdminStatus
     [ 1, 3, 6, 1, 2, 1, 2,  2, 1, 8 ]              # ifOperStatus
@@ -155,10 +157,10 @@ sub process_module_ExtendedIf($$$) {
 
 sub process_ext() {
     my $reserved = 0;
-    my ($rowindex, $index, $ifdescr, $ifspeed, $ifalias,
-        $ifadminstatus, $ifoperstatus ) = @_;
+    my ($rowindex, $index, $ifdescr, $ifspeed, $ifhighspeed,
+        $ifalias, $ifadminstatus, $ifoperstatus ) = @_;
     grep ( defined $_ && ( $_ = pretty_print $_),
-      ( $index, $ifdescr, $ifspeed, $ifalias, $ifadminstatus, $ifoperstatus ) );
+      ( $index, $ifdescr, $ifspeed, $ifhighspeed, $ifalias, $ifadminstatus, $ifoperstatus ) );
 
     # Compaq likes to put a null at the end....
     $ifdescr =~ s/\x00//g;
@@ -192,6 +194,10 @@ sub process_ext() {
             # 100 instead of 10000000. We assume that no real ethernet device
             # will have a speed of 100bps, so we change any 100 to 100M
             $ifspeed = 100000000;
+        }
+        if($ifhighspeed) {
+            # if we get a value back for ifhighspeed, use it
+            $ifspeed = $ifhighspeed * 1000000;
         }
 
         if($system =~ /^Linux/ && $CPQ_LINUX_GIGABIT_BUG && $ifspeed == 10000000) {
