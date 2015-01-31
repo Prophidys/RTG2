@@ -746,7 +746,7 @@ char *units(float val, char *string) {
 	else if (val > KILO)
 		snprintf(string, BUFSIZE, "%2.1f K", val / KILO);
 	else
-		snprintf(string, BUFSIZE, "%2.2f", val);
+		snprintf(string, BUFSIZE, "%2.1f ", val);
 	return (string);
 }
 
